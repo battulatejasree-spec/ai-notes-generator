@@ -68,23 +68,20 @@ def clear_all():
 # UI
 with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
-    gr.Markdown("## 📘 AI Notebook Generator")
-    gr.Markdown("### Generate structured notes instantly")
+    gr.Markdown("## 🤖 AI Notes Chatbot")
 
-    topic_input = gr.Textbox(
-        placeholder="Enter topic (e.g., Machine Learning)",
-        label="Topic"
-    )
+    chatbot = gr.Chatbot()
+    msg = gr.Textbox(placeholder="Ask any topic...", label="Your Question")
 
-    with gr.Row():
-        generate_btn = gr.Button("Generate Notes 🚀", variant="primary")
-        clear_btn = gr.Button("Clear 🧹")
+    def chat(user_input, chat_history):
+        if not user_input:
+            return "", chat_history
 
-    output_box = gr.Markdown()
+        response = generate_notes(user_input)
 
-    generate_btn.click(generate_notes, inputs=topic_input, outputs=output_box)
-    topic_input.submit(generate_notes, inputs=topic_input, outputs=output_box)
-    clear_btn.click(clear_all, None, [topic_input, output_box])
+        chat_history.append((user_input, response))
+        return "", chat_history
 
-# LAUNCH
+    msg.submit(chat, [msg, chatbot], [msg, chatbot])
+
 demo.launch()
